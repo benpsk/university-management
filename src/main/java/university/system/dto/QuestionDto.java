@@ -18,6 +18,16 @@ public class QuestionDto implements Serializable {
 
 	private List<AnswersDto> ans = new ArrayList<AnswersDto>();
 
+	private List<AnswersDto> correctAns = new ArrayList<AnswersDto>();
+
+	public List<AnswersDto> getCorrectAns() {
+		return correctAns;
+	}
+
+	public void setCorrectAns(List<AnswersDto> correctAns) {
+		this.correctAns = correctAns;
+	}
+
 	public List<AnswersDto> getAns() {
 		return ans;
 	}

@@ -49,20 +49,17 @@
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>Name</th>
-					<th>Roll No</th>
 					<th>Date</th>
-					<th>Attendance</th>
+					<th>Detail</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach items="${attList}" varStatus="row" var="att">
 					<tr>
 						<td>${row.count}</td>
-						<td>${att.studentname}</td>
-						<td>${att.rollno}</td>
 						<td>${att.date}</td>
-						<td>${att.status}</td>
+						<td><a href="view/${att.id}"
+							class="btn btn-sm btn-success">Detail</a></td>
 					</tr>
 				</c:forEach>
 			</tbody>

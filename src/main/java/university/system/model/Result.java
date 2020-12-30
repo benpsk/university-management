@@ -20,10 +20,7 @@ public class Result implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private Double mark;
-	private String remark;
-	private int qno;
-	private int correctno;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "std_id")
 	private Student std = new Student();
@@ -32,20 +29,28 @@ public class Result implements Serializable {
 	@JoinColumn(name = "etype_id")
 	private ExamType extype = new ExamType();
 
-	public int getQno() {
-		return qno;
+	@ManyToOne
+	@JoinColumn(name = "question_id")
+	private Question question = new Question();
+
+	@ManyToOne
+	@JoinColumn(name = "answer_id")
+	private Answers answers = new Answers();
+
+	public Question getQuestion() {
+		return question;
 	}
 
-	public void setQno(int qno) {
-		this.qno = qno;
+	public void setQuestion(Question question) {
+		this.question = question;
 	}
 
-	public int getCorrectno() {
-		return correctno;
+	public Answers getAnswers() {
+		return answers;
 	}
 
-	public void setCorrectno(int correctno) {
-		this.correctno = correctno;
+	public void setAnswers(Answers answers) {
+		this.answers = answers;
 	}
 
 	public Result() {
@@ -67,13 +72,6 @@ public class Result implements Serializable {
 		this.mark = mark;
 	}
 
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
 
 	public Student getStd() {
 		return std;

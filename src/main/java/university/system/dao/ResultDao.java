@@ -33,41 +33,55 @@ public class ResultDao {
 		Criteria cr = getSession().createCriteria(Result.class);
 		cr.createAlias("std", "s", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 		cr.createAlias("extype", "et", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
-		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id")
-				.add(Projections.property("s.name"), "studentname")
-				.add(Projections.property("et.type"), "examtypename")
-				.add(Projections.property("mark"), "mark").add(Projections.property("remark"), "remark")
-				.add(Projections.property("qno"), "qno").add(Projections.property("correctno"), "correctno"));
+		cr.setProjection(Projections.projectionList().add(Projections.groupProperty("s.id").as("studentid"))
+				.add(Projections.sum("mark").as("mark")).add(Projections.property("s.name"), "studentname")
+				.add(Projections.property("s.rollno"), "rollno").add(Projections.groupProperty("et.id"), "examtypeid")
+				.add(Projections.property("et.type"), "examtypename"));
+
 		cr.setResultTransformer(Transformers.aliasToBean(ResultDto.class));
 		return (List<ResultDto>) cr.list();
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ResultDto> findPass() {
+	public List<ResultDto> findByEtypeId(Integer eid, Integer gid) {
 		Criteria cr = getSession().createCriteria(Result.class);
-		cr.add(Restrictions.eq("remark", "Pass"));
 		cr.createAlias("std", "s", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
+		cr.createAlias("s.grade", "grade", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 		cr.createAlias("extype", "et", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
-		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id")
-				.add(Projections.property("s.name"), "studentname")
-				.add(Projections.property("et.type"), "examtypename")
-				.add(Projections.property("mark"), "mark").add(Projections.property("remark"), "remark")
-				.add(Projections.property("qno"), "qno").add(Projections.property("correctno"), "correctno"));
+		cr.add(Restrictions.eq("et.id", eid));
+		cr.add(Restrictions.eq("grade.id", gid));
+		cr.setProjection(Projections.projectionList().add(Projections.groupProperty("s.id").as("studentid"))
+				.add(Projections.sum("mark").as("mark")).add(Projections.property("s.name"), "studentname")
+				.add(Projections.property("s.rollno"), "rollno").add(Projections.groupProperty("et.id"), "examtypeid")
+				.add(Projections.property("et.type"), "examtypename"));
 		cr.setResultTransformer(Transformers.aliasToBean(ResultDto.class));
 		return (List<ResultDto>) cr.list();
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<ResultDto> findFail() {
+	public ResultDto findByStdid(int id) {
 		Criteria cr = getSession().createCriteria(Result.class);
-		cr.add(Restrictions.eq("remark", "Fail"));
 		cr.createAlias("std", "s", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 		cr.createAlias("extype", "et", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
-		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id")
-				.add(Projections.property("s.name"), "studentname")
-				.add(Projections.property("et.type"), "examtypename")
-				.add(Projections.property("mark"), "mark").add(Projections.property("remark"), "remark")
-				.add(Projections.property("qno"), "qno").add(Projections.property("correctno"), "correctno"));
+		cr.add(Restrictions.eq("s.id", id));
+
+		cr.setProjection(Projections.projectionList().add(Projections.groupProperty("s.id").as("studentid"))
+				.add(Projections.sum("mark").as("mark")).add(Projections.property("s.name"), "studentname")
+				.add(Projections.property("s.rollno"), "rollno").add(Projections.groupProperty("et.id"), "examtypeid")
+				.add(Projections.property("et.type"), "examtypename"));
+		cr.setResultTransformer(Transformers.aliasToBean(ResultDto.class));
+		return (ResultDto) cr.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<ResultDto> findStd(int id) {
+		Criteria cr = getSession().createCriteria(Result.class);
+		cr.createAlias("std", "s", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
+		cr.createAlias("question", "q", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
+		cr.createAlias("answers", "a", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
+		cr.add(Restrictions.eq("s.id", id));
+		cr.setProjection(Projections.projectionList().add(Projections.property("mark"), "mark")
+				.add(Projections.property("q.id"), "questionid").add(Projections.property("q.qname"), "questionname")
+				.add(Projections.property("a.id"), "answerid").add(Projections.property("a.ans"), "answername"));
 		cr.setResultTransformer(Transformers.aliasToBean(ResultDto.class));
 		return (List<ResultDto>) cr.list();
 	}

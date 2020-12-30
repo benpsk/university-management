@@ -176,7 +176,7 @@
 								aria-labelledby="navbarDropdown">
 								<a class="dropdown-item" href="/UniversitySystem/result/take">Take
 									Exam</a> <a class="dropdown-item"
-									href="/UniversitySystem/result/history">Exam History</a>
+									href="/UniversitySystem/result/record">Exam History</a>
 							</div></li>
 					</ul>
 				</td>

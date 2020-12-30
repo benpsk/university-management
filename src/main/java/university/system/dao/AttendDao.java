@@ -33,9 +33,7 @@ public class AttendDao {
 	public List<AttListDto> findAll() {
 		Criteria cr = getSession().createCriteria(Attendance.class);
 		cr.createAlias("std", "s", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
-		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id")
-				.add(Projections.property("date"), "date").add(Projections.property("status"), "status")
-				.add(Projections.property("s.name"), "studentname").add(Projections.property("s.rollno"), "rollno"));
+		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id"));
 		cr.setResultTransformer(Transformers.aliasToBean(AttListDto.class));
 		return (List<AttListDto>) cr.list();
 	}
@@ -46,8 +44,7 @@ public class AttendDao {
 		cr.createAlias("std", "s", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
 		cr.add(Restrictions.eq("date", date));
 		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id")
-				.add(Projections.property("date"), "date").add(Projections.property("status"), "status")
-				.add(Projections.property("s.name"), "studentname").add(Projections.property("s.rollno"), "rollno"));
+				.add(Projections.property("date"), "date"));
 		cr.setResultTransformer(Transformers.aliasToBean(AttListDto.class));
 		return (List<AttListDto>) cr.list();
 	}

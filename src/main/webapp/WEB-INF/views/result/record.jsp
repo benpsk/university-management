@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Exam Record History</title>
+<title>Exam Record</title>
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script
@@ -27,31 +27,44 @@
 	<div class="container">
 
 
-		<h2>Exam Record History</h2>
+		<h2>Exam Record</h2>
 		<br>
+		<form action="record">
+			<div class="row">
+				<div class="col-4">
+					<select name="eid" class="form-control">
+						<option value="0">Select Exam</option>
+						<c:forEach items="${etype}" var="e">
+							<option value="${e.id}">${e.type}</option>
+						</c:forEach>
+					</select>
+				</div>
 
-		<div class="dropdown form-inline pb-4"
-			style="float: right; margin-left: 20px;">
-			<button class="btn btn-outline-success dropdown-toggle" type="button"
-				id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-				aria-expanded="false">Filter by Result</button>
-			<div class="dropdown-menu btn btn-outline-success"
-				aria-labelledby="dropdownMenuButton">
-				<a class="dropdown-item" href="pass">Pass</a> <a
-					class="dropdown-item" href="fail">Fail</a>
+				<div class="col-4">
+					<form:form action="record" modelAttribute="g">
+						<form:select path="id" class="form-control">
+							<option value="0">Select Grade</option>
+							<c:forEach items="${grade}" var="g">
+								<option value="${g.id}">${g.name}</option>
+							</c:forEach>
+						</form:select>
+					</form:form>
+				</div>
+				<div class="col">
+					<button type="submit" class="btn btn-success">Search</button>
+				</div>
 			</div>
-		</div>
-
+		</form>
+		<hr>
+		<br>
 		<table class="table">
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>S. Name</th>
-					<th>E. Type</th>
-					<th>Total Q.</th>
-					<th>Correct A.</th>
+					<th>Name</th>
+					<th>Roll no</th>
 					<th>T. Mark</th>
-					<th>Remark</th>
+					<th>View</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -59,11 +72,10 @@
 					<tr>
 						<td>${row.count}</td>
 						<td>${r.studentname}</td>
-						<td>${r.examtypename}</td>
-						<td>${r.qno}</td>
-						<td>${r.correctno}</td>
+						<td>${r.rollno}</td>
 						<td>${r.mark}</td>
-						<td>${r.remark}</td>
+						<td><a href="view/${r.studentid}/${r.examtypeid}"
+							class="btn btn-sm btn-success">Detail</a></td>
 					</tr>
 				</c:forEach>
 			</tbody>

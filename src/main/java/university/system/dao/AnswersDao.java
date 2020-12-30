@@ -58,4 +58,16 @@ public class AnswersDao {
 		q.executeUpdate();
 
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<AnswersDto> correctAns(int id) {
+		Criteria cr = getSession().createCriteria(Answers.class);
+		cr.createAlias("question", "q", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN);
+		cr.add(Restrictions.eq("q.id", id));
+		cr.add(Restrictions.eq("status", true));
+		cr.setProjection(Projections.projectionList().add(Projections.property("id"), "id")
+				.add(Projections.property("ans"), "ans1").add(Projections.property("status"), "status1"));
+		cr.setResultTransformer(Transformers.aliasToBean(AnswersDto.class));
+		return (List<AnswersDto>) cr.list();
+	}
 }

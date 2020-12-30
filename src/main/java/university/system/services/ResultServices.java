@@ -26,21 +26,25 @@ public class ResultServices {
 		result.getStd().setId(dto.getStudentid());
 		result.getExtype().setId(dto.getExamtypeid());
 		result.setMark(dto.getMark());
-		result.setRemark(dto.getRemark());
-		result.setQno(dto.getQno());
-		result.setCorrectno(dto.getCorrectno());
+		result.getQuestion().setId(dto.getQuestionid());
+		result.getAnswers().setId(dto.getAnswerid());
 		resultDao.save(result);
 	}
-	
+
 	public List<ResultDto> findAll() {
 		return resultDao.findAll();
 	}
 
-	public List<ResultDto> findPass() {
-		return resultDao.findPass();
+	public List<ResultDto> findByEtypeId(Integer eid, Integer gid) {
+		return resultDao.findByEtypeId(eid, gid);
 	}
-	
-	public List<ResultDto> findFail() {
-		return resultDao.findFail();
+
+	public ResultDto findByStdid(int id) {
+		return resultDao.findByStdid(id);
 	}
+
+	public List<ResultDto> findStd(int id) {
+		return resultDao.findStd(id);
+	}
+
 }

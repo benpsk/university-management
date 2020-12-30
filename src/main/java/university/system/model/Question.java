@@ -32,6 +32,17 @@ public class Question implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "etype_id")
 	private ExamType etype = new ExamType();
+	
+	@OneToMany(mappedBy = "question", targetEntity = Result.class, cascade = CascadeType.ALL)
+	private List<Result> result = new ArrayList<Result>();
+	
+	public List<Result> getResult() {
+		return result;
+	}
+
+	public void setResult(List<Result> result) {
+		this.result = result;
+	}
 
 	public Question() {
 

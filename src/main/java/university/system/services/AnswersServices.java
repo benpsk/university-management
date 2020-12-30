@@ -86,6 +86,10 @@ public class AnswersServices {
 	public List<AnswersDto> findByQid(int id) {
 		return dao.findByQid(id);
 	}
+	
+	public List<AnswersDto> correctAns(int id) {
+		return dao.correctAns(id);
+	}
 
 	public void delete(int id) {
 		dao.delete(id);

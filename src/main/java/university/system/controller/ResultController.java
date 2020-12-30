@@ -1,5 +1,6 @@
 package university.system.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,14 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import university.system.dto.AnswersDto;
+import university.system.dto.GradeDto;
 import university.system.dto.QuestionDto;
 import university.system.dto.ResultDto;
 import university.system.services.AnswersServices;
 import university.system.services.ExamTypeServices;
+import university.system.services.GradeServices;
 import university.system.services.QuestionServices;
 import university.system.services.ResultServices;
 import university.system.services.StudentServices;
@@ -34,6 +39,8 @@ public class ResultController {
 	private AnswersServices aServices;
 	@Autowired
 	private ResultServices rServices;
+	@Autowired
+	private GradeServices gServices;
 
 	@RequestMapping(value = "take")
 	public String takeE(Model m) {
@@ -45,7 +52,6 @@ public class ResultController {
 
 	@RequestMapping(value = "take", method = RequestMethod.POST)
 	public String q(@ModelAttribute("result") ResultDto dto, Model m) {
-		System.out.println(dto.getStudentid());
 		List<QuestionDto> question = qServices.findByEid(dto.getExamtypeid());
 		question.forEach(q -> {
 			q.setAns(aServices.findByQid(q.getId()));
@@ -54,44 +60,24 @@ public class ResultController {
 		return "result/list";
 	}
 
-	
-	
 	@RequestMapping(value = "result", method = RequestMethod.POST)
 	public String r(HttpServletRequest request, @ModelAttribute("result") ResultDto dto, Model m) {
-
-		int RightAns = 0;
-		int QNO = 0;
 		Double score = 0.0;
-		Double status = 0.0;
-		String remark = null;
 		for (String qid : dto.getqIds()) {
-			QNO++;
-			QuestionDto qq = qServices.findById(Integer.parseInt(qid));
-			status += qq.getMark();
-
 			Integer correctAid = findCorrectAid(Integer.parseInt(qid));
 			if (correctAid == Integer.parseInt(request.getParameter("q_" + qid))) {
 				QuestionDto q = qServices.findById(Integer.parseInt(qid));
-				score += q.getMark();
-				RightAns++;
+				score = q.getMark();
 			}
+			dto.setQuestionid(Integer.parseInt(qid));
+			dto.setAnswerid(Integer.parseInt(request.getParameter("q_" + qid)));
+			dto.setMark(score);
+			rServices.save(dto);
+			score = 0.0;
 		}
-		m.addAttribute("rAns", RightAns);
-		m.addAttribute("qno", QNO);
-		m.addAttribute("score", score);
-
-		if (score >= status / 2) {
-			remark = "Pass";
-		} else {
-			remark = "Fail";
-		}
-		dto.setMark(score);
-		dto.setRemark(remark);
-		dto.setQno(QNO);
-		dto.setCorrectno(RightAns);
-
-		rServices.save(dto);
-		return "result/result";
+		Integer sid = dto.getStudentid();
+		Integer eid = dto.getExamtypeid();
+		return "redirect:/result/view/" + sid + "/" + eid;
 	}
 
 	private Integer findCorrectAid(int qid) {
@@ -104,21 +90,36 @@ public class ResultController {
 		return null;
 	}
 
-	@RequestMapping(value = "history")
-	public String history(Model m) {
-		m.addAttribute("result", rServices.findAll());
-		return "result/history";
+	@RequestMapping(value = "record")
+	public String record(@ModelAttribute(value = "grade") GradeDto grade,
+			@RequestParam(value = "eid", required = false) Integer eid, Model m) {
+		m.addAttribute("etype", etypeServices.findAll());
+		m.addAttribute("grade", gServices.getGrade());
+		m.addAttribute("g", new GradeDto());
+
+		List<ResultDto> resultList = new ArrayList<ResultDto>();
+		Integer gid = grade.getId();
+
+		if (eid != null && gid != 0) {
+			resultList = rServices.findByEtypeId(eid, gid);
+			m.addAttribute("result", resultList);
+
+		} else {
+			m.addAttribute("result", rServices.findAll());
+		}
+		return "result/record";
 	}
-	
-	@RequestMapping(value="pass")
-	public String pass(Model m) {
-		m.addAttribute("pass", rServices.findPass());
-		return "result/pass";
-	}
-	
-	@RequestMapping(value="fail")
-	public String fail(Model m) {
-		m.addAttribute("fail", rServices.findFail());
-		return "result/fail";
+
+	@RequestMapping(value = "view/{sid}/{eid}")
+	public String view(@PathVariable int sid, @PathVariable int eid, Model m) {
+		m.addAttribute("result", rServices.findByStdid(sid));
+		List<ResultDto> result = rServices.findStd(sid);
+
+		result.forEach(r -> {
+			r.setAnswers(aServices.findByQid(r.getQuestionid()));
+			r.setCorrectAns(aServices.correctAns(r.getQuestionid()));
+		});
+		m.addAttribute("ques", result);
+		return "result/view";
 	}
 }
